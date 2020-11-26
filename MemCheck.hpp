@@ -8,22 +8,27 @@ void* operator new[] (size_t _size, char* _file, unsigned int _line);
 #define new new(__FILE__, __LINE__)
 #endif
 
-class MallocCounter {
-    static unsigned int LeakDetector() noexcept;
-public:
-    static unsigned int mallocCount;
+namespace MemCheck {
+    class MallocCounter {
+        static unsigned int printLeak() noexcept;
+    public:
+        static unsigned int mallocCount;
 
-    MallocCounter() noexcept {
-        ++mallocCount;
-    }
-
-    ~MallocCounter() noexcept {
-        if (--mallocCount == 0) {
-            LeakDetector();
+        MallocCounter() noexcept {
+            ++mallocCount;
         }
-    }
-};
 
-static MallocCounter _exit_counter;
+        ~MallocCounter() noexcept {
+            if (--mallocCount == 0) {
+                printLeak();
+            }
+        }
+    };
+
+    static MallocCounter _exit_counter;
+}
+
+
+
 
 #endif
